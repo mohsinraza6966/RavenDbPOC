@@ -1,7 +1,9 @@
 ﻿
 using System;
 using System.Configuration;
+using System.Reflection;
 using Raven.Client.Documents;
+using Raven.Client.Documents.Indexes;
 using Raven.Client.ServerWide;
 using Raven.Client.ServerWide.Operations;
 
@@ -19,6 +21,9 @@ namespace ContactsManager
                 };
 
                 store.Initialize();
+
+                var asm = Assembly.GetExecutingAssembly();
+                IndexCreation.CreateIndexes(asm, store);
 
                 // Try to retrieve a record of this database
                 var databaseRecord = store.Maintenance.Server.Send(new GetDatabaseRecordOperation(store.Database));

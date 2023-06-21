@@ -40,19 +40,24 @@ namespace NorthWind.Models
 
 	public class Employee
 	{
-		public Address Address { get; set; }
-		public DateTimeOffset Birthday { get; set; }
-		public int Extension { get; set; }
+		public string Id { get; set; }
 		public string FirstName { get; set; }
-		public DateTimeOffset HiredAt { get; set; }
-		public string HomePhone { get; set; }
+		
 		public string LastName { get; set; }
-		public List<string> Notes { get; set; }
-		public string ReportsTo { get; set; }
-		public List<string> Territories { get; set; }
-		public string Title { get; set; }
+		
 	}
 
+	public class Company
+	{
+		public string Id { get; set; }
+		public Contact Contact { get; set; }
+	}
+
+	public class Supplier
+	{
+		public string Id { get; set; }
+		public Contact Contact { get; set; }
+	}
 	public class Employees_ByFirstAndLastName : AbstractIndexCreationTask<Employee>
 	{
 		public Employees_ByFirstAndLastName()
@@ -64,6 +69,54 @@ namespace NorthWind.Models
 					FirstName = employee.FirstName,
 					LastName = employee.LastName
 				};
+		}
+	}
+
+	public class PeopleSearchResult
+	{
+		public string SourceId { get; set; }
+		public string Name { get; set; }
+		public string Type { get; set; }
+	}
+	public class People_Search : AbstractMultiMapIndexCreationTask<PeopleSearchResult>
+	{
+		public People_Search()
+		{
+			AddMap<Company>(companies =>
+				from company in companies
+				select new PeopleSearchResult
+				{
+					SourceId = company.Id,
+					Name = company.Contact.Name,
+					Type = "Company's contact"
+				}
+				);
+
+			AddMap<Supplier>(suppliers =>
+				from supplier in suppliers
+				select new PeopleSearchResult
+				{
+					SourceId = supplier.Id,
+					Name = supplier.Contact.Name,
+					Type = "Supplier's contact"
+				}
+				);
+
+			AddMap<Employee>(employees =>
+				from employee in employees
+				select new PeopleSearchResult
+				{
+					SourceId = employee.Id,
+					Name = $"{employee.FirstName} {employee.LastName}",
+					Type = "Employee"
+				}
+				);
+
+			Index(entry => entry.Name, FieldIndexing.Search);
+
+			Store(entry => entry.SourceId, FieldStorage.Yes);
+			Store(entry => entry.Name, FieldStorage.Yes);
+			Store(entry => entry.Type, FieldStorage.Yes);
 		}
 	}
 }

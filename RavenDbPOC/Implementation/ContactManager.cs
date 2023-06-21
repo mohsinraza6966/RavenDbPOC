@@ -135,8 +135,8 @@ namespace NorthWind
         }
         public void SyncIndexCreation()
         {
-            var store = DocumentStoreHolder.Store;
-            new Employees_ByFirstAndLastName().Execute(store);
+            //var store = DocumentStoreHolder.Store;
+            //new Employees_ByFirstAndLastName().Execute(store);
         }
         public void VerifyIndexCreation()
         {
