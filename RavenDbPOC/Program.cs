@@ -34,6 +34,7 @@ namespace ContactsManager
                 Console.WriteLine("I - Sync Index To Server");
                 Console.WriteLine("O - Sorted OrderId's");
                 Console.WriteLine("V - Verify Index Creation");
+                Console.WriteLine("M - Multi Map Index Verification");
                 Console.WriteLine("Q - Query all contacts (limit to 128 items)");
 
                 var input = Console.ReadKey();
@@ -56,6 +57,9 @@ namespace ContactsManager
                         break;
                     case ConsoleKey.I:
                         _manager.SyncIndexCreation();
+                        break;
+                    case ConsoleKey.M:
+                        _manager.MultiMapIndexVerification();
                         break;
                     case ConsoleKey.Q:
                         _manager.QueryAllContacts();

@@ -17,6 +17,7 @@ namespace NorthWind
 
         public void SyncIndexCreation();
         public void VerifyIndexCreation();
+        public void MultiMapIndexVerification();
 
     }
 }

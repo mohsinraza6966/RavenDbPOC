@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ContactsManager;
 using NorthWind.Models;
+using RavenDbPOC.Utility;
 
 namespace NorthWind
 {
@@ -142,9 +143,6 @@ namespace NorthWind
         {
             try
             {
-
-
-
                 using (var session = DocumentStoreHolder.Store.OpenSession())
                 {
                     var results = session
@@ -155,6 +153,35 @@ namespace NorthWind
                     foreach (var employee in results)
                     {
                         Console.WriteLine($"{employee.LastName}, {employee.FirstName}");
+                    }
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine("ex.Message: " + ex.Message);
+                Console.WriteLine("ex.ToString: " + ex.ToString());
+                Console.WriteLine("ex.InnerException: " + ex.InnerException);
+            }
+        }
+
+        public void MultiMapIndexVerification()
+        {
+            try
+            {
+
+                Console.Title = "Multi-map sample";
+                using (var session = DocumentStoreHolder.Store.OpenSession())
+                {
+
+                    Console.Write("\nSearch terms: ");
+                    var searchTerms = Console.ReadLine();
+
+                    foreach (var result in IndexUtility.Search(session, searchTerms))
+                    {
+                        Console.WriteLine($"{result.SourceId}\t{result.Type}\t{result.Name}");
                     }
                 }
             }
