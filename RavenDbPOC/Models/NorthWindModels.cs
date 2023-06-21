@@ -7,7 +7,16 @@ using System.Threading.Tasks;
 
 namespace NorthWind.Models
 {
-    public  class Contact
+	public class Category
+	{
+		public string Name { get; set; }
+	}
+
+	public class Product
+	{
+		public string Category { get; set; }
+	}
+	public  class Contact
     {
         public string Id { get; set; }
         public string Name { get; set; }
@@ -15,7 +24,8 @@ namespace NorthWind.Models
     }
     public class Order
     {
-        public string Id { get; set; }
+		public string Employee { get; }
+		public string Id { get; set; }
         public string Company { get; set; }
         public DateTimeOffset OrderedAt { get; set; }
     }
@@ -46,7 +56,6 @@ namespace NorthWind.Models
 		public string LastName { get; set; }
 		
 	}
-
 	public class Company
 	{
 		public string Id { get; set; }
@@ -117,6 +126,73 @@ namespace NorthWind.Models
 			Store(entry => entry.SourceId, FieldStorage.Yes);
 			Store(entry => entry.Name, FieldStorage.Yes);
 			Store(entry => entry.Type, FieldStorage.Yes);
+		}
+	}
+
+	public class Products_ByCategory : AbstractIndexCreationTask<Product, Products_ByCategory.Result>
+	{
+		public class Result
+		{
+			public string Category { get; set; }
+			public int Count { get; set; }
+		}
+
+		public Products_ByCategory()
+		{
+			Map = products =>
+				from product in products
+				select new
+				{
+					Category = product.Category,
+					Count = 1
+				};
+
+			Reduce = results =>
+				from result in results
+				group result by result.Category into g
+				select new
+				{
+					Category = g.Key,
+					Count = g.Sum(x => x.Count)
+				};
+		}
+	}
+
+	public class Employees_SalesPerMonth :
+	AbstractIndexCreationTask<Order, Employees_SalesPerMonth.Result>
+	{
+		public class Result
+		{
+			public string Employee { get; set; }
+			public string Month { get; set; }
+			public int TotalSales { get; set; }
+		}
+
+		public Employees_SalesPerMonth()
+		{
+			Map = orders =>
+				from order in orders
+				select new
+				{
+					order.Employee,
+					Month = order.OrderedAt.ToString("yyyy-MM"),
+					TotalSales = 1
+				};
+
+			Reduce = results =>
+				from result in results
+				group result by new
+				{
+					result.Employee,
+					result.Month
+				}
+				into g
+				select new
+				{
+					g.Key.Employee,
+					g.Key.Month,
+					TotalSales = g.Sum(x => x.TotalSales)
+				};
 		}
 	}
 }

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ContactsManager;
 using NorthWind.Models;
+using Raven.Client.Documents;
 using RavenDbPOC.Utility;
 
 namespace NorthWind
@@ -134,6 +135,22 @@ namespace NorthWind
                 }
             }
         }
+
+        public void MapReduceIndexVerification() {
+            using (var session = DocumentStoreHolder.Store.OpenSession())
+            {
+                var results = session
+                    .Query<Products_ByCategory.Result, Products_ByCategory>()
+                    .Include(x => x.Category)
+                    .ToList();
+
+                foreach (var result in results)
+                {
+                    var category = session.Load<Category>(result.Category);
+                    Console.WriteLine($"Name:  {category.Name} has {result.Count} items.");
+                }
+            }
+        }
         public void SyncIndexCreation()
         {
             //var store = DocumentStoreHolder.Store;
@@ -182,6 +199,42 @@ namespace NorthWind
                     foreach (var result in IndexUtility.Search(session, searchTerms))
                     {
                         Console.WriteLine($"{result.SourceId}\t{result.Type}\t{result.Name}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine("ex.Message: " + ex.Message);
+                Console.WriteLine("ex.ToString: " + ex.ToString());
+                Console.WriteLine("ex.InnerException: " + ex.InnerException);
+            }
+        }
+
+        public void GetMaxSalesEmployeeByMonth()
+        {
+            try
+            {
+
+                using (var session = DocumentStoreHolder.Store.OpenSession())
+                {
+                    var query = session
+                        .Query<Employees_SalesPerMonth.Result, Employees_SalesPerMonth>()
+                        .Include(x => x.Employee);
+
+                    var results = (
+                        from result in query
+                        where result.Month == "1998-03"
+                        orderby result.TotalSales descending
+                        select result
+                        ).ToList();
+
+                    foreach (var result in results)
+                    {
+                        var employee = session.Load<Employee>(result.Employee);
+                        Console.WriteLine(
+                            $"{employee.FirstName} {employee.LastName}"
+                            + $" made {result.TotalSales} sales.");
                     }
                 }
             }

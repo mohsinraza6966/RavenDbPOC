@@ -14,10 +14,11 @@ namespace NorthWind
         public void DeleteContact();
         public void QueryAllContacts();
         public void GetSortedOrderIds();
-
         public void SyncIndexCreation();
         public void VerifyIndexCreation();
         public void MultiMapIndexVerification();
+        public void MapReduceIndexVerification();
 
+        public void GetMaxSalesEmployeeByMonth();
     }
 }
