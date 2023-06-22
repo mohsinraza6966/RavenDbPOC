@@ -10,7 +10,7 @@ namespace NorthWind
     {
         public void CreateContact();
         public void RetrieveContact();
-        public void UpdateContact();
+        
         public void DeleteContact();
         public void QueryAllContacts();
         public void GetSortedOrderIds();
@@ -20,5 +20,7 @@ namespace NorthWind
         public void MapReduceIndexVerification();
 
         public void GetMaxSalesEmployeeByMonth();
+        //public void UpdateContact();
+        public  Task UpdateContactAsync();
     }
 }

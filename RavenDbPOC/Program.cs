@@ -5,6 +5,7 @@ using Raven.Client;
 using Raven.Client.Documents;
 using NorthWind;
 using Microsoft.Extensions.DependencyInjection;
+using System.Threading.Tasks;
 
 namespace ContactsManager
 {
@@ -16,12 +17,12 @@ namespace ContactsManager
         {
             _manager = manager;
         }
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            new Program(new ContactManager()).Run();
+            await new Program(new ContactManager()).RunAsync();
         }
       
-        private void Run()
+        private async Task RunAsync()
         {
             //_manager = new ContactManager();
             while (true)
@@ -53,7 +54,7 @@ namespace ContactsManager
                         _manager.RetrieveContact();
                         break;
                     case ConsoleKey.U:
-                        _manager.UpdateContact();
+                        await _manager.UpdateContactAsync();
                         break;
                     case ConsoleKey.D:
                         _manager.DeleteContact();

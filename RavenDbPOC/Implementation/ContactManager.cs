@@ -92,19 +92,19 @@ namespace NorthWind
             }
         }
 
-        public void UpdateContact()
+        public async Task UpdateContactAsync()
         {
             Console.WriteLine("Enter the contact id: ");
             var id = Console.ReadLine();
 
-            using (var session = DocumentStoreHolder.Store.OpenSession())
+            using (var session = DocumentStoreHolder.Store.OpenAsyncSession())
             {
-                var contact = session.Load<Contact>(id);
+                var contact = await session.LoadAsync<Contact>(id);
 
                 if (contact == null)
                 {
                     Console.WriteLine("Contact not found.");
-                    return;
+                    
                 }
 
                 Console.WriteLine($"Actual name: {contact.Name}");
@@ -115,7 +115,7 @@ namespace NorthWind
                 Console.WriteLine("New email address: ");
                 contact.Email = Console.ReadLine();
 
-                session.SaveChanges();
+                await session.SaveChangesAsync();
             }
         }
         public void GetSortedOrderIds()
