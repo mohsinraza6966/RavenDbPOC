@@ -24,5 +24,7 @@ namespace NorthWind
         public  Task UpdateContactAsync();
 
         public Task GetMetaDataAsync();
+
+        public Task UpdateDataByPatchAsync();
     }
 }

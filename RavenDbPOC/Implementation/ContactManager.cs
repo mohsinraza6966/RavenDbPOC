@@ -9,6 +9,8 @@ using ContactsManager;
 using NorthWind.Models;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Commands;
+using Raven.Client.Documents.Commands.Batches;
+using Raven.Client.Documents.Operations;
 using RavenDbPOC.Utility;
 using Sparrow.Json;
 
@@ -214,7 +216,7 @@ namespace NorthWind
                 using (var session = DocumentStoreHolder.Store.OpenSession())
                 {
                     var query = session.Query<Order>()
-                                       .Customize(q => 
+                                       .Customize(q =>
                                                      q.WaitForNonStaleResults(TimeSpan.FromSeconds(5))
                                         );
 
@@ -309,6 +311,37 @@ namespace NorthWind
                     metadata.TryGet<object>(propertyName, out var value);
                     Console.WriteLine($"{propertyName}: {value}");
                 }
+            }
+        }
+
+        public async Task UpdateDataByPatchAsync()
+        {
+            using (var session = DocumentStoreHolder.Store.OpenSession())
+            {
+                session.Advanced.Defer(new PatchCommandData(
+                    id: "orders/816-A",
+                    changeVector: null,
+                    patch: new PatchRequest
+                    {
+                        Script = "this.Lines.push(args.NewLine)",
+                        Values =
+                        {
+                            {
+                                "NewLine", new 
+                                {
+                                    Product = "products/1-a",
+                                    ProductName = "Chai",
+                                    PricePerUnit=18M,
+                                    Quantity=1,
+                                    Discount=0
+                                }
+                            }
+                        }
+
+                    },
+                    patchIfMissing: null));
+
+                session.SaveChanges();
             }
         }
     }

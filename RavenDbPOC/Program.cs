@@ -38,6 +38,7 @@ namespace ContactsManager
                 Console.WriteLine("M - Multi Map Index Verification");
                 Console.WriteLine("X - Map/Reduce Index Verification");
                 Console.WriteLine("L - Loading the Metadata");
+                Console.WriteLine("P - Update the document using a PatchCommand");
                 Console.WriteLine("S - Max Sales By Emplyee By Month");
                 Console.WriteLine("Q - Query all contacts (limit to 128 items)");
                 
@@ -84,6 +85,10 @@ namespace ContactsManager
                     case ConsoleKey.L:
                         await _manager.GetMetaDataAsync();
                         break;
+                    case ConsoleKey.P:
+                        await _manager.UpdateDataByPatchAsync();
+                        break;
+                        
                     default:
                         return;
                 }
