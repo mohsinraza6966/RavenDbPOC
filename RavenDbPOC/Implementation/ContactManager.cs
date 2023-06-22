@@ -316,7 +316,7 @@ namespace NorthWind
 
         public async Task UpdateDataByPatchAsync()
         {
-            using (var session = DocumentStoreHolder.Store.OpenSession())
+            using (var session = DocumentStoreHolder.Store.OpenAsyncSession())
             {
                 session.Advanced.Defer(new PatchCommandData(
                     id: "orders/816-A",
@@ -341,7 +341,7 @@ namespace NorthWind
                     },
                     patchIfMissing: null));
 
-                session.SaveChanges();
+                await session.SaveChangesAsync();
             }
         }
     }
