@@ -37,6 +37,7 @@ namespace ContactsManager
                 Console.WriteLine("V - Verify Index Creation");
                 Console.WriteLine("M - Multi Map Index Verification");
                 Console.WriteLine("X - Map/Reduce Index Verification");
+                Console.WriteLine("L - Loading the Metadata");
                 Console.WriteLine("S - Max Sales By Emplyee By Month");
                 Console.WriteLine("Q - Query all contacts (limit to 128 items)");
                 
@@ -79,6 +80,9 @@ namespace ContactsManager
                         break;
                     case ConsoleKey.S:
                         _manager.GetMaxSalesEmployeeByMonth();
+                        break;
+                    case ConsoleKey.L:
+                        await _manager.GetMetaDataAsync();
                         break;
                     default:
                         return;

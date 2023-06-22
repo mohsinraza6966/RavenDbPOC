@@ -22,5 +22,7 @@ namespace NorthWind
         public void GetMaxSalesEmployeeByMonth();
         //public void UpdateContact();
         public  Task UpdateContactAsync();
+
+        public Task GetMetaDataAsync();
     }
 }

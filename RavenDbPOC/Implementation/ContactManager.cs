@@ -3,11 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using ContactsManager;
 using NorthWind.Models;
 using Raven.Client.Documents;
+using Raven.Client.Documents.Commands;
 using RavenDbPOC.Utility;
+using Sparrow.Json;
 
 namespace NorthWind
 {
@@ -104,7 +107,7 @@ namespace NorthWind
                 if (contact == null)
                 {
                     Console.WriteLine("Contact not found.");
-                    
+
                 }
 
                 Console.WriteLine($"Actual name: {contact.Name}");
@@ -136,7 +139,8 @@ namespace NorthWind
             }
         }
 
-        public void MapReduceIndexVerification() {
+        public void MapReduceIndexVerification()
+        {
             using (var session = DocumentStoreHolder.Store.OpenSession())
             {
                 var results = session
@@ -189,6 +193,39 @@ namespace NorthWind
             try
             {
 
+                // request Name, City and Country 
+                //// for all entities from 'Companies' collection
+                //using (var session = DocumentStoreHolder.Store.OpenSession())
+                //{
+
+
+                //    var results = session
+                //        .Query<Company>().Statistics(out var stats)
+                //        .Select(x => new
+                //        {
+                //            Name = x.Name,
+                //            City = x.Address.City,
+                //            Country = x.Address.Country
+                //        })
+                //        .ToList();
+                //    Console.WriteLine( JsonSerializer.Serialize<object>(results));
+                //}
+
+                using (var session = DocumentStoreHolder.Store.OpenSession())
+                {
+                    var query = session.Query<Order>()
+                                       .Customize(q => 
+                                                     q.WaitForNonStaleResults(TimeSpan.FromSeconds(5))
+                                        );
+
+                    var orders = (
+                        from order in query
+                        where order.Company == "companies/1"
+                        orderby order.OrderedAt
+                        select order
+                        )
+                        .ToList();
+                }
                 Console.Title = "Multi-map sample";
                 using (var session = DocumentStoreHolder.Store.OpenSession())
                 {
@@ -244,6 +281,34 @@ namespace NorthWind
                 Console.WriteLine("ex.Message: " + ex.Message);
                 Console.WriteLine("ex.ToString: " + ex.ToString());
                 Console.WriteLine("ex.InnerException: " + ex.InnerException);
+            }
+        }
+
+        public async Task GetMetaDataAsync()
+        {
+            //using (var session = DocumentStoreHolder.Store.OpenAsyncSession())
+            //{
+            //    var product = await session.LoadAsync<Product>("products/1-A");
+            //    var metadata = session.Advanced.GetMetadataFor(product);
+
+            //    metadata["last-modified-by"] = "Mohsin Raza";
+            //    await session.SaveChangesAsync();
+            //}
+
+            using (var session = DocumentStoreHolder.Store.OpenSession())
+            {
+                var command = new GetDocumentsCommand(
+                    "products/1-a", null, metadataOnly: true);
+                session.Advanced.RequestExecutor.Execute(
+                    command, session.Advanced.Context);
+                var result = (BlittableJsonReaderObject)command.Result.Results[0];
+                var metadata = (BlittableJsonReaderObject)result["@metadata"];
+
+                foreach (var propertyName in metadata.GetPropertyNames())
+                {
+                    metadata.TryGet<object>(propertyName, out var value);
+                    Console.WriteLine($"{propertyName}: {value}");
+                }
             }
         }
     }

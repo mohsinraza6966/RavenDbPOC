@@ -59,7 +59,11 @@ namespace NorthWind.Models
 	public class Company
 	{
 		public string Id { get; set; }
-		public Contact Contact { get; set; }
+
+		public string Name { get; set; }
+
+        public Address Address { get; set; }
+        public Contact Contact { get; set; }
 	}
 
 	public class Supplier
@@ -193,6 +197,36 @@ namespace NorthWind.Models
 					g.Key.Month,
 					TotalSales = g.Sum(x => x.TotalSales)
 				};
+		}
+
+		public class Products_ByCategoryLookUp :AbstractIndexCreationTask<Product, Products_ByCategoryLookUp.Result>
+		{
+			public class Result
+			{
+				public string Category { get; set; }
+				public int Count { get; set; }
+			}
+
+			public Products_ByCategoryLookUp()
+			{
+				Map = products =>
+					from product in products
+					let categoryName = LoadDocument<Category>(product.Category).Name
+					select new
+					{
+						Category = categoryName,
+						Count = 1
+					};
+
+				Reduce = results =>
+					from result in results
+					group result by result.Category into g
+					select new
+					{
+						Category = g.Key,
+						Count = g.Sum(x => x.Count)
+					};
+			}
 		}
 	}
 }
