@@ -327,7 +327,7 @@ namespace NorthWind
                         Values =
                         {
                             {
-                                "NewLine", new 
+                                "NewLine", new
                                 {
                                     Product = "products/1-a",
                                     ProductName = "Chai",
@@ -342,6 +342,23 @@ namespace NorthWind
                     patchIfMissing: null));
 
                 await session.SaveChangesAsync();
+            }
+        }
+
+
+        public async Task PerformingBatchOperationAsync()
+        {
+            using (var session = DocumentStoreHolder.Store.OpenAsyncSession())
+            {
+                var operation =await  DocumentStoreHolder.Store.Operations
+                                .SendAsync(new PatchByQueryOperation(@"from Products as p
+                                                                where p.Discontinued = false
+                                                                update
+                                                                {
+                                                                    p.PricePerUnit = p.PricePerUnit * 1.1
+                                                                }")
+                                );
+                await operation.WaitForCompletionAsync();
             }
         }
     }

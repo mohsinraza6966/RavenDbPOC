@@ -26,5 +26,6 @@ namespace NorthWind
         public Task GetMetaDataAsync();
 
         public Task UpdateDataByPatchAsync();
+        public Task PerformingBatchOperationAsync();
     }
 }
