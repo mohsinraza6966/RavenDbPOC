@@ -40,7 +40,7 @@ namespace ContactsManager
                 Console.WriteLine("L - Loading the Metadata");
                 Console.WriteLine("P - Update the document using a PatchCommand");
                 Console.WriteLine("B - Performing a batch operation");
-                
+                Console.WriteLine("A - Data Subscriptions");
                 Console.WriteLine("S - Max Sales By Emplyee By Month");
                 Console.WriteLine("Q - Query all contacts (limit to 128 items)");
                 
@@ -93,7 +93,10 @@ namespace ContactsManager
                     case ConsoleKey.B:
                         await _manager.PerformingBatchOperationAsync();
                         break;
-                        
+                    case ConsoleKey.A:
+                        _manager.DataSubscription();
+                        break;
+
                     default:
                         return;
                 }

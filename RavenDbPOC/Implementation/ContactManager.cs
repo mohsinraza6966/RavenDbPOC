@@ -362,5 +362,20 @@ namespace NorthWind
 
             }
         }
+
+        public void DataSubscription()
+        {
+            var subscriptionWorker = DocumentStoreHolder.Store.Subscriptions.GetSubscriptionWorker<Order>("Big Orders");
+
+            var subscriptionRuntimeTask = subscriptionWorker.Run(batch =>
+            {
+                foreach (var order in batch.Items)
+                {
+                    // business logic here.
+                    Console.WriteLine(order.Id);
+                }
+            });
+
+        }
     }
 }

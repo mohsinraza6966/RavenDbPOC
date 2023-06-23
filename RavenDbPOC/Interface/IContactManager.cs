@@ -27,5 +27,7 @@ namespace NorthWind
 
         public Task UpdateDataByPatchAsync();
         public Task PerformingBatchOperationAsync();
+
+        public  void DataSubscription();
     }
 }
