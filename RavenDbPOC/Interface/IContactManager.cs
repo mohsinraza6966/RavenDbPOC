@@ -9,8 +9,7 @@ namespace NorthWind
     interface IContactManager
     {
         public void CreateContact();
-        public void RetrieveContact();
-        
+        public void RetrieveContact();       
         public void DeleteContact();
         public void QueryAllContacts();
         public void GetSortedOrderIds();
@@ -18,16 +17,12 @@ namespace NorthWind
         public void VerifyIndexCreation();
         public void MultiMapIndexVerification();
         public void MapReduceIndexVerification();
-
         public void GetMaxSalesEmployeeByMonth();
         //public void UpdateContact();
         public  Task UpdateContactAsync();
-
         public Task GetMetaDataAsync();
-
         public Task UpdateDataByPatchAsync();
         public Task PerformingBatchOperationAsync();
-
         public  void DataSubscription();
     }
 }
